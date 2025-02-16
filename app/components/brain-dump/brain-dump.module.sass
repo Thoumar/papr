@@ -1,0 +1,39 @@
+.brainDump
+  border-radius: 3px
+  flex: 1
+  border: 1px solid black
+  overflow: hidden
+  display: flex
+  flex-direction: column
+  box-shadow: #d6d6d6 0px 0px 8px
+
+  .title
+    padding: 0.5rem
+    border-bottom: 1px solid black
+
+  .list
+    display: grid
+    grid-auto-rows: 48px
+    overflow-y: auto
+    height: 100%
+
+    .inputContainer
+      display: flex
+      justify-content: space-between
+      padding: 0.3rem 0.5rem
+      border-bottom: 1px solid black
+
+      input
+        outline: none
+        border: none
+        width: 100%
+
+      &:last-child
+        border-bottom: none
+
+      .clearButton
+        width: 2rem
+        height: 2rem
+        background: transparent
+        border: none
+        cursor: pointer
