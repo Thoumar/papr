@@ -1,87 +1,118 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useRef, useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 
-import React, { useState } from "react";
-import { Droppable, DragDropContext, Draggable } from "@hello-pangea/dnd";
 import styles from "./daily-schedule.module.sass";
 
-type TimeSlot = {
-  time: string;
-  items: Array<{ id: string; content: string }>;
-};
+const dummyCalendarEvents = [
+  {
+    id: "1",
+    title: "Meeting",
+    start: new Date(new Date().setHours(9, 0, 0, 0)),
+    end: new Date(new Date().setHours(10, 0, 0, 0)),
+  },
+  {
+    id: "2",
+    title: "Lunch",
+    start: new Date(new Date().setHours(12, 0, 0, 0)),
+    end: new Date(new Date().setHours(13, 0, 0, 0)),
+  },
+];
 
-const generateTimeSlots = () => {
-  const slots: TimeSlot[] = [];
-  for (let hour = 5; hour <= 24; hour++) {
-    const time =
-      hour === 24
-        ? "12:00 AM"
-        : `${hour % 12 || 12}:00 ${hour < 12 ? "AM" : "PM"}`;
-    slots.push({ time, items: [] });
-  }
-  return slots;
-};
+const dummyExternalEvents = [
+  { id: "3", title: "External Event 1" },
+  { id: "4", title: "External Event 2" },
+];
 
 const DailySchedule = () => {
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(generateTimeSlots());
+  const [calendarEvents, setCalendarEvents] = useState(dummyCalendarEvents);
+  const [, setExternalEvents] = useState(dummyExternalEvents);
+  const externalElRef = useRef<HTMLDivElement>(null);
 
-  const handleDragEnd = (result: any) => {
-    const { destination, source } = result;
+  useEffect(() => {
+    if (externalElRef.current) {
+      new Draggable(externalElRef.current, {
+        itemSelector: ".fc-event",
+        eventData: function (eventEl: any) {
+          return {
+            id: eventEl.getAttribute("data-id"),
+            title: eventEl.getAttribute("data-title"),
+          };
+        },
+      });
+    }
+  }, []);
 
-    if (!destination) return;
+  const handleEventReceive = (info: any) => {
+    setCalendarEvents((prev) => [
+      ...prev,
+      {
+        id: info.event.id,
+        title: info.event.title,
+        start: info.event.start,
+        end: info.event.end,
+      },
+    ]);
+    setExternalEvents((prev) => prev.filter((ev) => ev.id !== info.event.id));
+  };
 
-    const sourceSlot = timeSlots[source.droppableId];
-    const destSlot = timeSlots[destination.droppableId];
+  const handleEventDrop = (info: any) => {
+    const { id, start, end } = info.event;
+    setCalendarEvents((prev) =>
+      prev.map((ev) => (ev.id === id ? { ...ev, start, end } : ev))
+    );
+  };
 
-    // Create updated slots
-    const newTimeSlots = [...timeSlots];
-    const [movedItem] = sourceSlot.items.splice(source.index, 1);
-    destSlot.items.splice(destination.index, 0, movedItem);
-
-    setTimeSlots(newTimeSlots);
+  const handleEventDragStop = (info: any) => {
+    const externalEl = externalElRef.current;
+    if (externalEl) {
+      const rect = externalEl.getBoundingClientRect();
+      const { clientX, clientY } = info.jsEvent;
+      if (
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom
+      ) {
+        const eventId = info.event.id;
+        setCalendarEvents((prev) => prev.filter((ev) => ev.id !== eventId));
+        setExternalEvents((prev) => [
+          ...prev,
+          { id: eventId, title: info.event.title },
+        ]);
+      }
+    }
   };
 
   return (
-    <div className={styles.dailySchedule}>
-      <h2 className={styles.title}>Schedule</h2>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className={styles.schedule}>
-          {timeSlots.map((slot, index) => (
-            <div key={slot.time} className={styles.timeSlot}>
-              <span className={styles.time}>{slot.time}</span>
-              <Droppable droppableId={index.toString()}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={styles.dropZone}
-                  >
-                    {slot.items.map((item, itemIndex) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={itemIndex}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={styles.item}
-                          >
-                            {item.content}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </div>
-          ))}
-        </div>
-      </DragDropContext>
+    <div
+      className={styles.dailySchedule}
+      style={{ display: "flex", flexDirection: "column" }}
+    >
+      <h2 className={styles.title}>Scedule</h2>
+      <div className={styles.schedule}>
+        <FullCalendar
+          headerToolbar={false}
+          allDaySlot={false}
+          dayHeaders={false}
+          plugins={[timeGridPlugin, interactionPlugin]}
+          initialView="timeGridDay"
+          nowIndicator={true}
+          editable={true}
+          droppable={true}
+          events={calendarEvents}
+          eventReceive={handleEventReceive}
+          eventDrop={handleEventDrop}
+          eventDragStop={handleEventDragStop}
+          eventBackgroundColor="white"
+          eventBorderColor="black"
+          eventTextColor="black"
+          height="auto"
+        />
+      </div>
     </div>
   );
 };
