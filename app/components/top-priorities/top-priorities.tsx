@@ -6,88 +6,81 @@ import { Draggable } from "@fullcalendar/interaction";
 import styles from "./top-priorities.module.sass";
 import { Lexend } from "@/app/fonts";
 import clsx from "clsx";
-
-const STORAGE_KEY = "top-priorities";
+import { useAppStore } from "@/app/stores/appStore";
 
 const TopPriorities = () => {
-  const [priorities, setPriorities] = useState<string[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : ["", "", ""];
-    }
-    return ["", "", ""];
-  });
+  const currentDateString = useAppStore((state) => state.currentDate);
+  const getDailyData = useAppStore((state) => state.getDailyData);
+  const updateTopPriorities = useAppStore((state) => state.updateTopPriorities);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(priorities));
-  }, [priorities]);
+  const [topPriorities, setTopPriorities] = useState<string[]>([]);
 
-  const handlePriorityChange = ({
-    index,
-    value,
-  }: {
-    index: number;
-    value: string;
-  }) => {
-    const newPriorities = [...priorities];
+  useEffect(() => {
+    try {
+      const currentDate = new Date(currentDateString);
+      const dailyData = getDailyData(currentDate);
+      setTopPriorities(dailyData.topPriorities);
+    } catch (error) {
+      console.error("Error fetching top priorities:", error);
+      setTopPriorities([]);
+    }
+  }, [currentDateString, getDailyData]);
+
+  const handlePriorityChange = (index: number, value: string) => {
+    const newPriorities = [...topPriorities];
     newPriorities[index] = value;
-    setPriorities(newPriorities);
+    setTopPriorities(newPriorities);
+    updateTopPriorities(new Date(currentDateString), newPriorities);
   };
 
   const handleKeyDown = (
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    if (e.key === "Enter" && index < priorities.length - 1) {
+    if (e.key === "Enter" && index < topPriorities.length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
-    if (e.key === "Backspace" && priorities[index] === "" && index > 0) {
+    if (e.key === "Backspace" && topPriorities[index] === "" && index > 0) {
       e.preventDefault();
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const handleContainerClick = (index: number) => {
+  const handleContainerClick = (index: number) =>
     inputRefs.current[index]?.focus();
-  };
 
   useEffect(() => {
     if (externalRef.current) {
       new Draggable(externalRef.current, {
         itemSelector: ".fc-event",
-        eventData: function (eventEl: any) {
-          return {
-            id: eventEl.getAttribute("data-id"),
-            title: eventEl.getAttribute("data-title"),
-          };
-        },
+        eventData: (eventEl: any) => ({
+          id: eventEl.getAttribute("data-id"),
+          title: eventEl.getAttribute("data-title"),
+        }),
       });
     }
-  }, [priorities]);
+  }, [topPriorities]);
 
   return (
     <div className={styles.topPriorities}>
       <h2 className={clsx([Lexend, styles.title])}>Top Priorities</h2>
       <div ref={externalRef} className={styles.grid}>
-        {priorities.map((priority, index) => (
+        {topPriorities.map((priority, index) => (
           <div
             key={index}
             className={`fc-event ${styles.inputContainer}`}
             data-id={`tp-${index}`}
-            data-title={priority}
             onClick={() => handleContainerClick(index)}
           >
             <input
-              // @ts-expect-error will fix later
+              // @ts-expect-error refs
               ref={(el) => (inputRefs.current[index] = el)}
               type="text"
               value={priority}
-              onChange={(e) =>
-                handlePriorityChange({ index, value: e.target.value })
-              }
+              onChange={(e) => handlePriorityChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               className={styles.input}
               placeholder={`Priority ${index + 1}`}

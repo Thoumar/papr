@@ -5,46 +5,21 @@ import styles from "./page.module.sass";
 import { BrainDump } from "./components/brain-dump/brain-dump";
 import { TopPriorities } from "./components/top-priorities/top-priorities";
 import { DailySchedule } from "./components/daily-schedule/daily-schedule";
-import Header from "./components/header/header";
-import { useEffect, useState } from "react";
+import Header from "./components/header/header"; // In your page.tsx file where the store is defined
 
 export default function Home() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-
-  useEffect(() => {
-    console.log("Current Date: ", currentDate);
-  }, [currentDate]);
-
-  const onNextDay = () => {
-    setCurrentDate((prevDate) => {
-      const nextDate = new Date(prevDate);
-      nextDate.setDate(prevDate.getDate() + 1);
-      return nextDate;
-    });
-  };
-
-  const onPreviousDay = () => {
-    setCurrentDate((prevDate) => {
-      const prevDay = new Date(prevDate);
-      prevDay.setDate(prevDate.getDate() - 1);
-      return prevDay;
-    });
-  };
-
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Header
-          date={currentDate}
-          clickNextDay={onNextDay}
-          clickPreviousDay={onPreviousDay}
-        />
+        <Header />
         <div className={styles.left}>
-          <TopPriorities />
-          <BrainDump />
+          <TopPriorities />{" "}
+          {/* Pass the store and currentDate to TopPriorities */}
+          <BrainDump /> {/* Pass the store and currentDate to BrainDump */}
         </div>
         <div className={styles.right}>
-          <DailySchedule />
+          <DailySchedule />{" "}
+          {/* Pass the store and currentDate to DailySchedule */}
         </div>
       </main>
     </div>

@@ -1,44 +1,78 @@
 import {
   ArrowLeftRounded,
   ArrowRightRounded,
-  RestartAltRounded,
+  ClearRounded,
+  CalendarTodayRounded,
 } from "@mui/icons-material";
 
 import styles from "./header.module.sass";
+import { useAppStore } from "@/app/stores/appStore";
 
-type HeaderProps = {
-  date: Date;
-  clickNextDay: () => void;
-  clickPreviousDay: () => void;
-};
+const Header = () => {
+  const currentDateString = useAppStore((state) => state.currentDate);
+  const setCurrentDate = useAppStore((state) => state.setCurrentDate);
+  const clearDay = useAppStore((state) => state.clearDay);
 
-const Header = ({ date, clickNextDay, clickPreviousDay }: HeaderProps) => {
   function onClear() {
     const confirmed = confirm(
       "You are about to reset all the cells and events of the current page, continue ?"
     );
-    if (confirmed) {
-      localStorage.removeItem("brain-dump-items");
-      localStorage.removeItem("top-priorities-items");
-    }
+    if (confirmed) clearDay(new Date(currentDateString));
   }
 
   function getFormattedDate() {
-    return date
-      .toLocaleDateString("en-US", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-      .replace(",", "");
+    if (!currentDateString) return "";
+
+    try {
+      const dateObj = new Date(currentDateString);
+
+      if (isNaN(dateObj.getTime())) {
+        console.error("Invalid date string:", currentDateString);
+        return "Invalid Date";
+      }
+
+      return dateObj
+        .toLocaleDateString("en-US", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+        .replace(",", "");
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Date Error";
+    }
   }
+
+  const clickNextDay = () => {
+    setCurrentDate((prevDate) => {
+      const nextDate = new Date(prevDate);
+      nextDate.setDate(prevDate.getDate() + 1);
+      return nextDate;
+    });
+  };
+
+  const clickPreviousDay = () => {
+    setCurrentDate((prevDate) => {
+      const prevDay = new Date(prevDate);
+      prevDay.setDate(prevDate.getDate() - 1);
+      return prevDay;
+    });
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
 
   return (
     <header className={styles.header}>
       <span className={styles.title}>Papr</span>
       <span className={styles.date}>{getFormattedDate()}</span>
       <span className={styles.buttons}>
+        <button onClick={goToToday}>
+          <CalendarTodayRounded fontSize="small" />
+        </button>
         <button onClick={clickPreviousDay}>
           <ArrowLeftRounded fontSize="small" />
         </button>
@@ -46,7 +80,7 @@ const Header = ({ date, clickNextDay, clickPreviousDay }: HeaderProps) => {
           <ArrowRightRounded fontSize="small" />
         </button>
         <button onClick={onClear}>
-          <RestartAltRounded fontSize="small" />
+          <ClearRounded fontSize="small" />
         </button>
       </span>
     </header>

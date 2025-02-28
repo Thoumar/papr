@@ -93,7 +93,7 @@ const BrainDump = () => {
             key={index}
             className={`fc-event ${styles.inputContainer}`}
             data-id={`bd-${index}`}
-            data-title={item || " "}
+            // data-title={item || " "}
             onClick={() => inputRefs.current[index]?.focus()}
           >
             <input

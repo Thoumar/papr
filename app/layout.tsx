@@ -9,7 +9,7 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: "Paper",
+  title: "Papr",
   description: "The most simple productivity sheet",
   icons: {
     icon: "/images/logo.png",
