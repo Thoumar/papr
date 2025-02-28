@@ -9,8 +9,11 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: "Lumen",
-  description: "Your go to productivity sheet",
+  title: "Paper",
+  description: "The most simple productivity sheet",
+  icons: {
+    icon: "/images/logo.png",
+  },
 };
 
 export default function RootLayout({
