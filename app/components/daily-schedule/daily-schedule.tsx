@@ -7,29 +7,21 @@ import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 
 import styles from "./daily-schedule.module.sass";
 
-const dummyCalendarEvents = [
-  {
-    id: "1",
-    title: "Meeting",
-    start: new Date(new Date().setHours(9, 0, 0, 0)),
-    end: new Date(new Date().setHours(10, 0, 0, 0)),
-  },
-  {
-    id: "2",
-    title: "Lunch",
-    start: new Date(new Date().setHours(12, 0, 0, 0)),
-    end: new Date(new Date().setHours(13, 0, 0, 0)),
-  },
-];
+type Task = {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+};
 
-const dummyExternalEvents = [
-  { id: "3", title: "External Event 1" },
-  { id: "4", title: "External Event 2" },
-];
+type Event = {
+  id: string;
+  title: string;
+};
 
 const DailySchedule = () => {
-  const [calendarEvents, setCalendarEvents] = useState(dummyCalendarEvents);
-  const [, setExternalEvents] = useState(dummyExternalEvents);
+  const [calendarEvents, setCalendarEvents] = useState<Task[]>([]);
+  const [, setExternalEvents] = useState<Event[]>([]);
   const externalElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

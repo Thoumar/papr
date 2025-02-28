@@ -2,6 +2,46 @@
     border: 1px solid black
     border-radius: 3px
     background: white
+    flex: 1
+    position: relative
+    overflow: auto
+
+    // Hide default scrollbar
+    scrollbar-width: none
+    -ms-overflow-style: none
+    &::-webkit-scrollbar
+        display: none
+
+    // Custom scrollbar container
+    &::after
+        content: ""
+        position: fixed
+        top: 0
+        right: 0
+        width: 8px
+        height: 100%
+        opacity: 0
+        transition: opacity 0.3s ease
+        background: transparent
+        pointer-events: none
+
+    // Show custom scrollbar on hover/scroll
+    &:hover::after,
+    &:focus::after,
+    &.scrolling::after
+        opacity: 1
+
+    // Custom scrollbar track and thumb
+    &::-webkit-scrollbar-track
+        background: transparent
+
+    &::-webkit-scrollbar-thumb
+        background: rgba(0, 0, 0, 0.2)
+        border-radius: 4px
+        transition: background 0.3s ease
+
+        &:hover
+            background: rgba(0, 0, 0, 0.3)
 
     .title
         padding: 0.5rem
@@ -10,6 +50,12 @@
 
     .schedule
         overflow: auto
+
+        // Hide default scrollbar for nested scroll container
+        scrollbar-width: none
+        -ms-overflow-style: none
+        &::-webkit-scrollbar
+            display: none
 
         .fc
             background: white
@@ -32,6 +78,10 @@
             border: 1px solid black !important
             color: black !important
             font-size: 0.9rem
+            cursor: pointer
+
+            &:hover
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
 
         .fc-now-indicator-line
             background-color: black
@@ -47,3 +97,6 @@
 
         .fc-theme-standard th
             border: none !important
+
+    .fc td.fc-timegrid-slot.fc-timegrid-slot-lane
+        border: 0px solid red !important

@@ -4,10 +4,24 @@ import React, { useState, useRef, useEffect } from "react";
 import { Draggable } from "@fullcalendar/interaction";
 import styles from "./brain-dump.module.sass";
 
+const STORAGE_KEY = "brain-dump-items";
+
 const BrainDump = () => {
-  const [items, setItems] = useState([""]);
+  const [items, setItems] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      setItems(saved ? JSON.parse(saved) : [""]);
+    }
+  }, []);
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const handleItemChange = ({
     index,
@@ -18,7 +32,6 @@ const BrainDump = () => {
   }) => {
     const newItems = [...items];
     newItems[index] = value;
-    // Add new input if last input is being typed and we haven't reached 100
     if (index === items.length - 1 && value && items.length < 100) {
       newItems.push("");
     }
@@ -26,9 +39,7 @@ const BrainDump = () => {
   };
 
   const removeItem = (index: number) => {
-    const newItems = [...items];
-    newItems.splice(index, 1);
-    // Ensure we always have at least one empty input
+    const newItems = items.filter((_, i) => i !== index);
     if (newItems.length === 0) {
       newItems.push("");
     }
@@ -53,24 +64,24 @@ const BrainDump = () => {
 
   const handleListClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      const lastInput = inputRefs.current[items.length - 1];
-      lastInput?.focus();
+      inputRefs.current[items.length - 1]?.focus();
     }
   };
 
-  // Initialize FullCalendar draggable for BrainDump items
   useEffect(() => {
-    if (externalRef.current) {
+    if (typeof window !== "undefined" && externalRef.current) {
       new Draggable(externalRef.current, {
         itemSelector: ".fc-event",
-        eventData: function (eventEl) {
-          return {
-            id: eventEl.getAttribute("data-id"),
-            title: eventEl.getAttribute("data-title"),
-          };
-        },
+        eventData: (eventEl) => ({
+          id: eventEl.getAttribute("data-id"),
+          title: eventEl.getAttribute("data-title") || " ",
+        }),
       });
     }
+  }, [items]);
+
+  useEffect(() => {
+    inputRefs.current = inputRefs.current.slice(0, items.length);
   }, [items]);
 
   return (
@@ -82,10 +93,11 @@ const BrainDump = () => {
             key={index}
             className={`fc-event ${styles.inputContainer}`}
             data-id={`bd-${index}`}
-            data-title={item}
+            data-title={item || " "}
+            onClick={() => inputRefs.current[index]?.focus()}
           >
             <input
-              // @ts-expect-error see later
+              // @ts-expect-error will fix later
               ref={(el) => (inputRefs.current[index] = el)}
               type="text"
               value={item}

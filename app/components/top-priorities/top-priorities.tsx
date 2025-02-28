@@ -7,10 +7,23 @@ import styles from "./top-priorities.module.sass";
 import { Lexend } from "@/app/fonts";
 import clsx from "clsx";
 
+const STORAGE_KEY = "top-priorities";
+
 const TopPriorities = () => {
-  const [priorities, setPriorities] = useState(["", "", ""]);
+  const [priorities, setPriorities] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : ["", "", ""];
+    }
+    return ["", "", ""];
+  });
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(priorities));
+  }, [priorities]);
 
   const handlePriorityChange = ({
     index,
@@ -68,7 +81,7 @@ const TopPriorities = () => {
             onClick={() => handleContainerClick(index)}
           >
             <input
-              // @ts-expect-error later
+              // @ts-expect-error will fix later
               ref={(el) => (inputRefs.current[index] = el)}
               type="text"
               value={priority}
