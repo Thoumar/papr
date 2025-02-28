@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 interface DailyData {
   topPriorities: string[];
   schedule: string[];
-  brainDump: string[];
+  brainDumps: string[];
 }
 
 interface AppStore {
@@ -13,7 +13,7 @@ interface AppStore {
   setCurrentDate: (date: Date | ((prevDate: Date) => Date)) => void;
   updateTopPriorities: (date: Date, priorities: string[]) => void;
   updateSchedule: (date: Date, schedule: string[]) => void;
-  updateBrainDump: (date: Date, brainDump: string[]) => void;
+  updateBrainDumps: (date: Date, brainDumps: string[]) => void;
   getDailyData: (date: Date) => DailyData;
   clearDay: (date: Date) => void; // New function
 }
@@ -43,9 +43,9 @@ export const useAppStore = create<AppStore>()(
             ...state.dataByDate,
             [dateString]: {
               ...(state.dataByDate[dateString] || {
-                topPriorities: [],
+                topPriorities: ["", "", ""],
                 schedule: [],
-                brainDump: [],
+                brainDumps: [""],
               }),
               topPriorities: priorities,
             },
@@ -59,27 +59,27 @@ export const useAppStore = create<AppStore>()(
             ...state.dataByDate,
             [dateString]: {
               ...(state.dataByDate[dateString] || {
-                topPriorities: [],
+                topPriorities: ["", "", ""],
                 schedule: [],
-                brainDump: [],
+                brainDumps: [""],
               }),
               schedule: schedule,
             },
           },
         }));
       },
-      updateBrainDump: (date, brainDump) => {
+      updateBrainDumps: (date, brainDumps) => {
         const dateString = date.toISOString().split("T")[0];
         set((state) => ({
           dataByDate: {
             ...state.dataByDate,
             [dateString]: {
               ...(state.dataByDate[dateString] || {
-                topPriorities: [],
+                topPriorities: ["", "", ""],
                 schedule: [],
-                brainDump: [],
+                brainDumps: [""],
               }),
-              brainDump: brainDump,
+              brainDumps: brainDumps,
             },
           },
         }));
@@ -90,7 +90,7 @@ export const useAppStore = create<AppStore>()(
           get().dataByDate[dateString] || {
             topPriorities: ["", "", ""],
             schedule: [],
-            brainDump: [],
+            brainDumps: [""],
           }
         );
       },

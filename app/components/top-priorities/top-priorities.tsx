@@ -16,7 +16,7 @@ const TopPriorities = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
 
-  const [topPriorities, setTopPriorities] = useState<string[]>([]);
+  const [topPriorities, setTopPriorities] = useState<string[]>(["", "", ""]);
 
   useEffect(() => {
     try {

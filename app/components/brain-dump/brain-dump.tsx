@@ -3,57 +3,66 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Draggable } from "@fullcalendar/interaction";
 import styles from "./brain-dump.module.sass";
-
-const STORAGE_KEY = "brain-dump-items";
+import { useAppStore } from "@/app/stores/appStore";
 
 const BrainDump = () => {
-  const [items, setItems] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      setItems(saved ? JSON.parse(saved) : [""]);
-    }
-  }, []);
+  const currentDateString = useAppStore((state) => state.currentDate);
+  const getDailyData = useAppStore((state) => state.getDailyData);
+  const updateBrainDumps = useAppStore((state) => state.updateBrainDumps);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+  const [brainDumps, setBrainDumps] = useState<string[]>([""]);
 
-  const handleItemChange = ({
-    index,
-    value,
-  }: {
-    index: number;
-    value: string;
-  }) => {
-    const newItems = [...items];
-    newItems[index] = value;
-    if (index === items.length - 1 && value && items.length < 100) {
-      newItems.push("");
+  useEffect(() => {
+    try {
+      const currentDate = new Date(currentDateString);
+      const dailyData = getDailyData(currentDate);
+      setBrainDumps(dailyData.brainDumps);
+    } catch (error) {
+      console.error("Error fetching top priorities:", error);
+      setBrainDumps([]);
     }
-    setItems(newItems);
+  }, [currentDateString, getDailyData]);
+
+  const handleDumpChange = (index: number, value: string) => {
+    const newBrainDumps = [...brainDumps];
+    newBrainDumps[index] = value;
+    if (index === brainDumps.length - 1 && value && brainDumps.length < 100) {
+      newBrainDumps.push("");
+    }
+    setBrainDumps(newBrainDumps);
+    updateBrainDumps(new Date(currentDateString), newBrainDumps);
   };
 
   const removeItem = (index: number) => {
-    const newItems = items.filter((_, i) => i !== index);
-    if (newItems.length === 0) {
-      newItems.push("");
+    const newDumps = brainDumps.filter((_, i) => i !== index);
+    if (newDumps.length === 0) {
+      newDumps.push("");
     }
-    setItems(newItems);
+    setBrainDumps(newDumps);
   };
+
+  useEffect(() => {
+    try {
+      const currentDate = new Date(currentDateString);
+      const dailyData = getDailyData(currentDate);
+      setBrainDumps(dailyData.brainDumps);
+    } catch (error) {
+      console.error("Error fetching top priorities:", error);
+      setBrainDumps([]);
+    }
+  }, [currentDateString, getDailyData]);
 
   const handleKeyDown = (
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    if (e.key === "Enter" && index < items.length - 1) {
+    if (e.key === "Enter" && index < brainDumps.length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
-    if (e.key === "Backspace" && items[index] === "") {
+    if (e.key === "Backspace" && brainDumps[index] === "") {
       e.preventDefault();
       if (index > 0) {
         removeItem(index);
@@ -64,7 +73,7 @@ const BrainDump = () => {
 
   const handleListClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      inputRefs.current[items.length - 1]?.focus();
+      inputRefs.current[brainDumps.length - 1]?.focus();
     }
   };
 
@@ -78,17 +87,17 @@ const BrainDump = () => {
         }),
       });
     }
-  }, [items]);
+  }, [brainDumps]);
 
   useEffect(() => {
-    inputRefs.current = inputRefs.current.slice(0, items.length);
-  }, [items]);
+    inputRefs.current = inputRefs.current.slice(0, brainDumps.length);
+  }, [brainDumps]);
 
   return (
     <div className={styles.brainDump}>
       <h2 className={styles.title}>Brain Dump</h2>
       <div className={styles.list} onClick={handleListClick} ref={externalRef}>
-        {items.map((item, index) => (
+        {brainDumps.map((item, index) => (
           <div
             key={index}
             className={`fc-event ${styles.inputContainer}`}
@@ -101,9 +110,7 @@ const BrainDump = () => {
               ref={(el) => (inputRefs.current[index] = el)}
               type="text"
               value={item}
-              onChange={(e) =>
-                handleItemChange({ index, value: e.target.value })
-              }
+              onChange={(e) => handleDumpChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               className={styles.input}
               placeholder={`Item ${index + 1}`}
