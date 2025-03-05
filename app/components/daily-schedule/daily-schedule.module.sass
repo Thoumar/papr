@@ -6,13 +6,11 @@
     position: relative
     overflow: auto
 
-    // Hide default scrollbar
     scrollbar-width: none
     -ms-overflow-style: none
     &::-webkit-scrollbar
         display: none
 
-    // Custom scrollbar container
     &::after
         content: ""
         position: fixed
@@ -25,13 +23,11 @@
         background: transparent
         pointer-events: none
 
-    // Show custom scrollbar on hover/scroll
     &:hover::after,
     &:focus::after,
     &.scrolling::after
         opacity: 1
 
-    // Custom scrollbar track and thumb
     &::-webkit-scrollbar-track
         background: transparent
 
@@ -50,8 +46,6 @@
 
     .schedule
         overflow: auto
-
-        // Hide default scrollbar for nested scroll container
         scrollbar-width: none
         -ms-overflow-style: none
         &::-webkit-scrollbar

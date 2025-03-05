@@ -5,6 +5,7 @@
   display: flex
 
 .main
+  flex: 1
   margin: 0 auto
   padding: 1rem
   display: grid
@@ -29,6 +30,12 @@
     overflow: hidden
     grid-area: 2 / 2 / 3 / 3
 
+.sidebarLeft
+  flex: 1
+
+.sidebarRight
+  flex: 1
+
 @media screen and (max-width: 768px)
   .main
     display: flex
@@ -42,3 +49,6 @@
 
     .right
       width: 100%
+
+  .sidebarLeft, .sidebarRight, .right
+    display: none

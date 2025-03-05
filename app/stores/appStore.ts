@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Expanded schedule type to include more event details
 interface ScheduleEvent {
   id: string;
   end?: string;
@@ -17,7 +16,10 @@ interface DailyData {
 
 interface AppStore {
   currentDate: string;
+  favorites: string[];
   clearDay: (date: Date) => void;
+  addFavorite: (date: string) => void;
+  removeFavorite: (date: string) => void;
   getDailyData: (date: Date) => DailyData;
   dataByDate: { [date: string]: DailyData };
   updateBrainDumps: (date: Date, brainDumps: string[]) => void;
@@ -29,8 +31,21 @@ interface AppStore {
 export const useAppStore = create<AppStore>()(
   persist(
     (set, get) => ({
+      favorites: [],
       dataByDate: {},
       currentDate: new Date().toISOString(),
+      removeFavorite: (date) => {
+        set((state) => ({
+          favorites: state.favorites.filter((fav) => fav !== date),
+        }));
+      },
+      addFavorite: (date) => {
+        set((state) => ({
+          favorites: state.favorites.includes(date)
+            ? state.favorites
+            : [...state.favorites, date],
+        }));
+      },
       getDailyData: (date) => {
         const dateString = date.toISOString().split("T")[0];
         return (
@@ -64,7 +79,7 @@ export const useAppStore = create<AppStore>()(
                 brainDumps: [""],
                 topPriorities: ["", "", ""],
               }),
-              schedule: schedule,
+              schedule,
             },
           },
         }));
@@ -80,7 +95,7 @@ export const useAppStore = create<AppStore>()(
                 brainDumps: [""],
                 topPriorities: ["", "", ""],
               }),
-              brainDumps: brainDumps,
+              brainDumps,
             },
           },
         }));

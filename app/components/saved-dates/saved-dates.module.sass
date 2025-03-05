@@ -1,0 +1,46 @@
+.savedDates
+    padding: 1rem
+    flex: 1
+    gap: .3rem
+
+    .dateContainer
+        list-style-type: none
+        display: flex
+        justify-content: space-between
+        align-items: center
+        max-width: 15rem
+
+        .date
+            padding: 0.2rem
+            cursor: pointer
+            border: none
+            background-color: transparent
+            transition: all .5s ease
+            border-radius: 5px
+            display: inline-flex
+            justify-content: center
+            align-items: center
+            width: auto
+            height: auto
+
+            &:hover
+                background-color: lightgray
+
+        button
+            cursor: pointer
+            border: none
+            background-color: transparent
+            transition: all .5s ease
+            border-radius: 5px
+            display: none
+            justify-content: center
+            align-items: center
+            height: 1.4rem
+            width: 1.4rem
+
+            & svg
+                transform: scale(0.8)
+
+@media screen and (max-width: 768px)
+    .savedDates
+        display: none !important

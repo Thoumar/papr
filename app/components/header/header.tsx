@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 
 import { useAppStore } from "@papr/app/stores/appStore";
@@ -6,6 +8,7 @@ import {
   ClearRounded,
   ArrowLeftRounded,
   ArrowRightRounded,
+  StarBorderRounded,
   CalendarTodayRounded,
 } from "@mui/icons-material";
 
@@ -15,6 +18,7 @@ const Header = () => {
   const currentDateString = useAppStore((state) => state.currentDate);
   const setCurrentDate = useAppStore((state) => state.setCurrentDate);
   const clearDay = useAppStore((state) => state.clearDay);
+  const addFavorite = useAppStore((state) => state.addFavorite);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -73,15 +77,18 @@ const Header = () => {
     });
   };
 
-  const goToToday = () => {
-    setCurrentDate(new Date());
-  };
+  const goToToday = () => setCurrentDate(new Date());
+
+  const addCurrentDateToFavorite = () => addFavorite(currentDateString);
 
   return (
     <header className={styles.header}>
       <span className={styles.title}>Papr</span>
       <span className={styles.date}>{getFormattedDate()}</span>
       <span className={styles.buttons}>
+        <button onClick={addCurrentDateToFavorite}>
+          <StarBorderRounded fontSize="small" />
+        </button>
         <button onClick={goToToday}>
           <CalendarTodayRounded fontSize="small" />
         </button>

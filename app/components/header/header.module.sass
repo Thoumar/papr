@@ -37,9 +37,19 @@
             &:hover
                 background-color: lightgray
 
-            &:first-child
+            &:nth-child(1)
                 margin-right: 1rem
 
+                & svg
+                    transform: scale(0.8)
+
+            &:nth-child(2)
+                margin-right: 1rem
+
+                & svg
+                    transform: scale(0.6)
+
+            &:nth-child(5)
                 & svg
                     transform: scale(0.8)
 
@@ -53,3 +63,8 @@
 
         .date
             justify-content: flex-start
+
+        .buttons
+            button
+                &:nth-child(1)
+                    display: none
