@@ -1,16 +1,20 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
+
+import { useAppStore } from "@papr/app/stores/appStore";
+
 import { Draggable } from "@fullcalendar/interaction";
+import { ClearRounded, DragIndicatorRounded } from "@mui/icons-material";
+
 import styles from "./brain-dump.module.sass";
-import { useAppStore } from "@/app/stores/appStore";
 
 const BrainDump = () => {
   const currentDateString = useAppStore((state) => state.currentDate);
   const getDailyData = useAppStore((state) => state.getDailyData);
   const updateBrainDumps = useAppStore((state) => state.updateBrainDumps);
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<(null | HTMLInputElement)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
 
   const [brainDumps, setBrainDumps] = useState<string[]>([""]);
@@ -78,13 +82,21 @@ const BrainDump = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined" && externalRef.current) {
+    if (externalRef.current) {
       new Draggable(externalRef.current, {
         itemSelector: ".fc-event",
-        eventData: (eventEl) => ({
-          id: eventEl.getAttribute("data-id"),
-          title: eventEl.getAttribute("data-title") || " ",
-        }),
+        eventData: (eventEl: HTMLElement) => {
+          // Explicitly get the title from the input field
+          const titleEl = eventEl.querySelector("input");
+          const title = titleEl
+            ? titleEl.value
+            : `Brain Dump ${eventEl.getAttribute("data-index") || ""}`;
+
+          return {
+            id: eventEl.getAttribute("data-id") || crypto.randomUUID(),
+            title: title || "Untitled Dump",
+          };
+        },
       });
     }
   }, [brainDumps]);
@@ -96,25 +108,36 @@ const BrainDump = () => {
   return (
     <div className={styles.brainDump}>
       <h2 className={styles.title}>Brain Dump</h2>
-      <div className={styles.list} onClick={handleListClick} ref={externalRef}>
+      <div ref={externalRef} className={styles.list} onClick={handleListClick}>
         {brainDumps.map((item, index) => (
           <div
             key={index}
-            className={`fc-event ${styles.inputContainer}`}
+            data-index={index + 1}
             data-id={`bd-${index}`}
-            // data-title={item || " "}
+            className={`fc-event ${styles.inputContainer}`}
             onClick={() => inputRefs.current[index]?.focus()}
           >
             <input
-              // @ts-expect-error will fix later
-              ref={(el) => (inputRefs.current[index] = el)}
               type="text"
               value={item}
-              onChange={(e) => handleDumpChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
               className={styles.input}
               placeholder={`Item ${index + 1}`}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              // @ts-expect-error will fix later
+              ref={(el) => (inputRefs.current[index] = el)}
+              onChange={(e) => handleDumpChange(index, e.target.value)}
             />
+            <div className={styles.actions}>
+              <div
+                className={styles.clearInput}
+                onClick={() => removeItem(index)}
+              >
+                <ClearRounded />
+              </div>
+              <div className={styles.dragHandle}>
+                <DragIndicatorRounded />
+              </div>
+            </div>
           </div>
         ))}
       </div>

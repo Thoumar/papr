@@ -1,8 +1,8 @@
 import { Lexend as LexendFont } from "next/font/google";
 
 const Lexend = LexendFont({
-  subsets: ["latin"],
   display: "swap",
+  subsets: ["latin"],
 });
 
 export { Lexend };

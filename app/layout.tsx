@@ -1,19 +1,23 @@
-import type { Metadata } from "next";
-import { Lexend } from "next/font/google";
-import "./globals.css";
 import Head from "next/head";
+import type { Metadata } from "next";
+
+import "./globals.css";
+
+import { Lexend } from "next/font/google";
+
+import { PostHogProvider } from "./providers";
 
 const lexend = Lexend({
-  subsets: ["latin"],
   display: "swap",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Papr",
-  description: "The most simple productivity sheet",
   icons: {
     icon: "/images/logo.png",
   },
+  description: "The most simple productivity sheet",
 };
 
 export default function RootLayout({
@@ -24,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" sizes="any" href="/favicon.ico" />
       </Head>
-      <body className={lexend.className}>{children}</body>
+      <body className={lexend.className}>
+        <PostHogProvider>{children}</PostHogProvider>
+      </body>
     </html>
   );
 }

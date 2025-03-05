@@ -1,11 +1,11 @@
 "use client";
 
-import styles from "./page.module.sass";
+import Header from "@papr/app/components/header/header";
+import { BrainDump } from "@papr/app/components/brain-dump/brain-dump";
+import { DailySchedule } from "@papr/app/components/daily-schedule/daily-schedule";
+import { TopPriorities } from "@papr/app/components/top-priorities/top-priorities";
 
-import { BrainDump } from "./components/brain-dump/brain-dump";
-import { TopPriorities } from "./components/top-priorities/top-priorities";
-import { DailySchedule } from "./components/daily-schedule/daily-schedule";
-import Header from "./components/header/header"; // In your page.tsx file where the store is defined
+import styles from "./page.module.sass";
 
 export default function Home() {
   return (
@@ -13,13 +13,10 @@ export default function Home() {
       <main className={styles.main}>
         <Header />
         <div className={styles.left}>
-          <TopPriorities />{" "}
-          {/* Pass the store and currentDate to TopPriorities */}
-          <BrainDump /> {/* Pass the store and currentDate to BrainDump */}
+          <TopPriorities /> <BrainDump />
         </div>
         <div className={styles.right}>
-          <DailySchedule />{" "}
-          {/* Pass the store and currentDate to DailySchedule */}
+          <DailySchedule />
         </div>
       </main>
     </div>

@@ -20,6 +20,7 @@
     "@mui/material": "^6.4.6",
     "clsx": "^2.1.1",
     "next": "15.1.7",
+    "posthog-js": "^1.227.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "^1.85.0",
@@ -30,8 +31,9 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
+    "eslint": "^9.21.0",
     "eslint-config-next": "15.1.7",
+    "eslint-plugin-perfectionist": "^4.9.0",
     "typescript": "^5"
   }
 }

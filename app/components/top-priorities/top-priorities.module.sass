@@ -14,13 +14,46 @@
             display: flex
             justify-content: space-between
             border-bottom: 1px solid black
-            cursor: grab
-            padding: 0.5rem 2.5rem 0.5rem 0.5rem
+            padding: 0.5rem
+
+            &:hover
+                background-color: #f2f2f2
 
             input
+                background-color: transparent
                 outline: none
                 border: none
-                width: 100%
+                flex: 1
+
+            &:hover
+                .actions
+                    display: flex
 
             &:last-child
                 border-bottom: none
+
+            .actions
+                width: 3.5rem
+                display: none
+                justify-content: space-between
+                align-items: center
+
+                .clearInput
+                    display: flex
+                    align-items: center
+                    justify-content: center
+                    color: black
+                    cursor: pointer
+
+                    svg
+                        height: 1.1rem
+
+                .dragHandle
+                    display: flex
+                    align-items: center
+                    justify-content: center
+                    color: black
+                    cursor: grab
+
+                    svg
+                        height: 1.1rem

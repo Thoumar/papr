@@ -1,38 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+"use client";
+
+import React, { useRef, useEffect } from "react";
+
+import { Lexend } from "@papr/app/fonts";
+import { useAppStore } from "@papr/app/stores/appStore";
+
 import { Draggable } from "@fullcalendar/interaction";
-import styles from "./top-priorities.module.sass";
-import { Lexend } from "@/app/fonts";
+import { ClearRounded, DragIndicatorRounded } from "@mui/icons-material";
+
 import clsx from "clsx";
-import { useAppStore } from "@/app/stores/appStore";
+
+import styles from "./top-priorities.module.sass";
 
 const TopPriorities = () => {
-  const currentDateString = useAppStore((state) => state.currentDate);
   const getDailyData = useAppStore((state) => state.getDailyData);
+  const currentDateString = useAppStore((state) => state.currentDate);
   const updateTopPriorities = useAppStore((state) => state.updateTopPriorities);
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const externalRef = useRef<HTMLDivElement>(null);
+  const topPriorities = useAppStore(
+    (state) => state.getDailyData(new Date(state.currentDate)).topPriorities
+  );
 
-  const [topPriorities, setTopPriorities] = useState<string[]>(["", "", ""]);
+  const inputRefs = useRef<(null | HTMLInputElement)[]>([]);
+  const externalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
       const currentDate = new Date(currentDateString);
       const dailyData = getDailyData(currentDate);
-      setTopPriorities(dailyData.topPriorities);
+      updateTopPriorities(currentDate, dailyData.topPriorities);
     } catch (error) {
       console.error("Error fetching top priorities:", error);
-      setTopPriorities([]);
+      updateTopPriorities(new Date(currentDateString), []);
     }
-  }, [currentDateString, getDailyData]);
+  }, [currentDateString, getDailyData, updateTopPriorities]);
 
   const handlePriorityChange = (index: number, value: string) => {
     const newPriorities = [...topPriorities];
     newPriorities[index] = value;
-    setTopPriorities(newPriorities);
+    updateTopPriorities(new Date(currentDateString), newPriorities);
+  };
+
+  const removeItem = (index: number) => {
+    const newPriorities = [...topPriorities];
+    newPriorities[index] = "";
     updateTopPriorities(new Date(currentDateString), newPriorities);
   };
 
@@ -56,10 +69,18 @@ const TopPriorities = () => {
     if (externalRef.current) {
       new Draggable(externalRef.current, {
         itemSelector: ".fc-event",
-        eventData: (eventEl: any) => ({
-          id: eventEl.getAttribute("data-id"),
-          title: eventEl.getAttribute("data-title"),
-        }),
+        eventData: (eventEl: HTMLElement) => {
+          // Explicitly get the title from the input field
+          const titleEl = eventEl.querySelector("input");
+          const title = titleEl
+            ? titleEl.value
+            : `Priority ${eventEl.getAttribute("data-index") || ""}`;
+
+          return {
+            id: eventEl.getAttribute("data-id") || crypto.randomUUID(),
+            title: title || "Untitled Priority",
+          };
+        },
       });
     }
   }, [topPriorities]);
@@ -71,20 +92,33 @@ const TopPriorities = () => {
         {topPriorities.map((priority, index) => (
           <div
             key={index}
-            className={`fc-event ${styles.inputContainer}`}
+            data-index={index + 1}
             data-id={`tp-${index}`}
             onClick={() => handleContainerClick(index)}
+            className={`fc-event ${styles.inputContainer}`}
           >
             <input
-              // @ts-expect-error refs
-              ref={(el) => (inputRefs.current[index] = el)}
               type="text"
               value={priority}
-              onChange={(e) => handlePriorityChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
               className={styles.input}
               placeholder={`Priority ${index + 1}`}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              // @ts-expect-error refs
+              ref={(el) => (inputRefs.current[index] = el)}
+              onChange={(e) => handlePriorityChange(index, e.target.value)}
             />
+
+            <div className={styles.actions}>
+              <div
+                className={styles.clearInput}
+                onClick={() => removeItem(index)}
+              >
+                <ClearRounded />
+              </div>
+              <div className={styles.dragHandle}>
+                <DragIndicatorRounded />
+              </div>
+            </div>
           </div>
         ))}
       </div>

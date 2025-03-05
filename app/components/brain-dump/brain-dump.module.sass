@@ -1,39 +1,65 @@
 .brainDump
-  border-radius: 3px
-  flex: 1
-  border: 1px solid black
-  overflow: hidden
-  display: flex
-  flex-direction: column
+	border-radius: 3px
+	flex: 1
+	border: 1px solid black
+	overflow: hidden
+	display: flex
+	flex-direction: column
 
-  .title
-    padding: 0.5rem
-    border-bottom: 1px solid black
+	.title
+		padding: 0.5rem
+		border-bottom: 1px solid black
 
-  .list
-    display: grid
-    grid-auto-rows: 48px
-    overflow-y: auto
-    height: 100%
+	.list
+		display: grid
+		grid-auto-rows: 48px
+		overflow-y: auto
+		height: 100%
 
-    .inputContainer
-      display: flex
-      justify-content: space-between
-      border-bottom: 1px solid black
-      cursor: grab
-      padding: 0.5rem 2.5rem 0.5rem 0.5rem
+		.inputContainer
+			display: flex
+			justify-content: space-between
+			border-bottom: 1px solid black
+			padding: 0.5rem
 
-      input
-        outline: none
-        border: none
-        width: 100%
+			&:hover
+				background-color: #f2f2f2
 
-      &:last-child
-        border-bottom: none
+			input
+				background-color: transparent
+				outline: none
+				border: none
+				flex: 1
 
-      .clearButton
-        width: 2rem
-        height: 2rem
-        background: transparent
-        border: none
-        cursor: pointer
+			&:hover
+				.actions
+					display: flex
+
+			&:last-child
+				border-bottom: none
+
+			.actions
+				width: 3.5rem
+				display: none
+				justify-content: space-between
+				align-items: center
+
+			.clearInput
+				display: flex
+				align-items: center
+				justify-content: center
+				color: black
+				cursor: pointer
+
+				svg
+					height: 1.1rem
+
+			.dragHandle
+				display: flex
+				align-items: center
+				justify-content: center
+				color: black
+				cursor: grab
+
+				svg
+					height: 1.1rem

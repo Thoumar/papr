@@ -1,44 +1,56 @@
+import { useState, useEffect } from "react";
+
+import { useAppStore } from "@papr/app/stores/appStore";
+
 import {
+  ClearRounded,
   ArrowLeftRounded,
   ArrowRightRounded,
-  ClearRounded,
   CalendarTodayRounded,
 } from "@mui/icons-material";
 
 import styles from "./header.module.sass";
-import { useAppStore } from "@/app/stores/appStore";
 
 const Header = () => {
   const currentDateString = useAppStore((state) => state.currentDate);
   const setCurrentDate = useAppStore((state) => state.setCurrentDate);
   const clearDay = useAppStore((state) => state.clearDay);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   function onClear() {
     const confirmed = confirm(
-      "You are about to reset all the cells and events of the current page, continue ?"
+      "You are about to reset all the cells and events of the current day, continue?"
     );
     if (confirmed) clearDay(new Date(currentDateString));
   }
 
   function getFormattedDate() {
     if (!currentDateString) return "";
-
     try {
       const dateObj = new Date(currentDateString);
-
       if (isNaN(dateObj.getTime())) {
         console.error("Invalid date string:", currentDateString);
         return "Invalid Date";
       }
 
-      return dateObj
-        .toLocaleDateString("en-US", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-        .replace(",", "");
+      return isMobile
+        ? dateObj.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            weekday: "short",
+          })
+        : dateObj.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            weekday: "long",
+            year: "numeric",
+          });
     } catch (error) {
       console.error("Error formatting date:", error);
       return "Date Error";

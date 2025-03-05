@@ -1,21 +1,29 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+// Expanded schedule type to include more event details
+interface ScheduleEvent {
+  id: string;
+  end?: string;
+  title: string;
+  start: string;
+}
+
 interface DailyData {
-  topPriorities: string[];
-  schedule: string[];
   brainDumps: string[];
+  topPriorities: string[];
+  schedule: ScheduleEvent[];
 }
 
 interface AppStore {
-  dataByDate: { [date: string]: DailyData };
-  currentDate: string; // Store as ISO string
-  setCurrentDate: (date: Date | ((prevDate: Date) => Date)) => void;
-  updateTopPriorities: (date: Date, priorities: string[]) => void;
-  updateSchedule: (date: Date, schedule: string[]) => void;
-  updateBrainDumps: (date: Date, brainDumps: string[]) => void;
+  currentDate: string;
+  clearDay: (date: Date) => void;
   getDailyData: (date: Date) => DailyData;
-  clearDay: (date: Date) => void; // New function
+  dataByDate: { [date: string]: DailyData };
+  updateBrainDumps: (date: Date, brainDumps: string[]) => void;
+  updateSchedule: (date: Date, schedule: ScheduleEvent[]) => void;
+  updateTopPriorities: (date: Date, priorities: string[]) => void;
+  setCurrentDate: (date: Date | ((prevDate: Date) => Date)) => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -23,34 +31,27 @@ export const useAppStore = create<AppStore>()(
     (set, get) => ({
       dataByDate: {},
       currentDate: new Date().toISOString(),
-      setCurrentDate: (dateOrUpdater) => {
-        if (typeof dateOrUpdater === "function") {
-          const currentDateObj = new Date(get().currentDate);
-          if (!isNaN(currentDateObj.getTime())) {
-            const newDateObj = dateOrUpdater(currentDateObj);
-            set({ currentDate: newDateObj.toISOString() });
-          } else {
-            set({ currentDate: new Date().toISOString() });
-          }
-        } else {
-          set({ currentDate: dateOrUpdater.toISOString() });
-        }
-      },
-      updateTopPriorities: (date, priorities) => {
+      getDailyData: (date) => {
         const dateString = date.toISOString().split("T")[0];
-        set((state) => ({
-          dataByDate: {
-            ...state.dataByDate,
-            [dateString]: {
-              ...(state.dataByDate[dateString] || {
-                topPriorities: ["", "", ""],
-                schedule: [],
-                brainDumps: [""],
-              }),
-              topPriorities: priorities,
-            },
-          },
-        }));
+        return (
+          get().dataByDate[dateString] || {
+            schedule: [],
+            brainDumps: [""],
+            topPriorities: ["", "", ""],
+          }
+        );
+      },
+      clearDay: (date) => {
+        const dateString = date.toISOString().split("T")[0];
+        set((state) => {
+          const newDataByDate = { ...state.dataByDate };
+          newDataByDate[dateString] = {
+            schedule: [],
+            brainDumps: [""],
+            topPriorities: ["", "", ""],
+          };
+          return { dataByDate: newDataByDate };
+        });
       },
       updateSchedule: (date, schedule) => {
         const dateString = date.toISOString().split("T")[0];
@@ -59,9 +60,9 @@ export const useAppStore = create<AppStore>()(
             ...state.dataByDate,
             [dateString]: {
               ...(state.dataByDate[dateString] || {
-                topPriorities: ["", "", ""],
                 schedule: [],
                 brainDumps: [""],
+                topPriorities: ["", "", ""],
               }),
               schedule: schedule,
             },
@@ -75,32 +76,43 @@ export const useAppStore = create<AppStore>()(
             ...state.dataByDate,
             [dateString]: {
               ...(state.dataByDate[dateString] || {
-                topPriorities: ["", "", ""],
                 schedule: [],
                 brainDumps: [""],
+                topPriorities: ["", "", ""],
               }),
               brainDumps: brainDumps,
             },
           },
         }));
       },
-      getDailyData: (date) => {
+      updateTopPriorities: (date, priorities) => {
         const dateString = date.toISOString().split("T")[0];
-        return (
-          get().dataByDate[dateString] || {
-            topPriorities: ["", "", ""],
-            schedule: [],
-            brainDumps: [""],
-          }
-        );
+        set((state) => ({
+          dataByDate: {
+            ...state.dataByDate,
+            [dateString]: {
+              ...(state.dataByDate[dateString] || {
+                schedule: [],
+                brainDumps: [""],
+                topPriorities: ["", "", ""],
+              }),
+              topPriorities: priorities,
+            },
+          },
+        }));
       },
-      clearDay: (date) => {
-        const dateString = date.toISOString().split("T")[0];
-        set((state) => {
-          const newDataByDate = { ...state.dataByDate };
-          delete newDataByDate[dateString]; // Remove all data for the given day
-          return { dataByDate: newDataByDate };
-        });
+      setCurrentDate: (dateOrUpdater) => {
+        if (typeof dateOrUpdater === "function") {
+          const currentDateObj = new Date(get().currentDate);
+          if (!isNaN(currentDateObj.getTime())) {
+            const newDateObj = dateOrUpdater(currentDateObj);
+            set({ currentDate: newDateObj.toISOString() });
+          } else {
+            set({ currentDate: new Date().toISOString() });
+          }
+        } else {
+          set({ currentDate: dateOrUpdater.toISOString() });
+        }
       },
     }),
     {
