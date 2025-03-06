@@ -14,7 +14,7 @@ import {
 
 import styles from "./header.module.sass";
 
-const Header = () => {
+export const Header = () => {
   const currentDateString = useAppStore((state) => state.currentDate);
   const setCurrentDate = useAppStore((state) => state.setCurrentDate);
   const clearDay = useAppStore((state) => state.clearDay);
@@ -105,5 +105,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

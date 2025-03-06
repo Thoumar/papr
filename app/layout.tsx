@@ -1,11 +1,11 @@
 import Head from "next/head";
-import type { Metadata } from "next";
 
 import "./globals.css";
 
+import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 
-import { PostHogProvider } from "./providers";
+import PostHogWrapper from "./posthog/posthog-wrapper";
 
 const lexend = Lexend({
   display: "swap",
@@ -112,11 +112,6 @@ export const metadata: Metadata = {
   ],
 };
 
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -128,7 +123,7 @@ export default function RootLayout({
         <link rel="icon" sizes="any" href="/favicon.ico" />
       </Head>
       <body className={lexend.className}>
-        <PostHogProvider>{children}</PostHogProvider>
+        <PostHogWrapper>{children}</PostHogWrapper>
       </body>
     </html>
   );
