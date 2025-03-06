@@ -1,3 +1,5 @@
+"use client";
+
 import { useAppStore } from "@papr/app/stores/appStore";
 
 import { ClearRounded } from "@mui/icons-material";

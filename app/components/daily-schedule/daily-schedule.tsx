@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import FullCalendar from "@fullcalendar/react";
 import React, { useRef, useState, useEffect } from "react";
 
