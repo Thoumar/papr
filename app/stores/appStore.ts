@@ -56,18 +56,6 @@ export const useAppStore = create<AppStore>()(
           }
         );
       },
-      clearDay: (date) => {
-        const dateString = date.toISOString().split("T")[0];
-        set((state) => {
-          const newDataByDate = { ...state.dataByDate };
-          newDataByDate[dateString] = {
-            schedule: [],
-            brainDumps: [""],
-            topPriorities: ["", "", ""],
-          };
-          return { dataByDate: newDataByDate };
-        });
-      },
       updateSchedule: (date, schedule) => {
         const dateString = date.toISOString().split("T")[0];
         set((state) => ({
@@ -128,6 +116,26 @@ export const useAppStore = create<AppStore>()(
         } else {
           set({ currentDate: dateOrUpdater.toISOString() });
         }
+      },
+      clearDay: (date) => {
+        const dateString = date.toISOString().split("T")[0];
+
+        // Create a complete empty data structure for the day
+        const emptyDayData: DailyData = {
+          schedule: [], // Ensure this is an empty array, not undefined
+          brainDumps: [""],
+          topPriorities: ["", "", ""],
+        };
+
+        set((state) => {
+          // Create a new copy of the dataByDate object
+          const newDataByDate = { ...state.dataByDate };
+
+          // Explicitly set the date's data to our empty structure
+          newDataByDate[dateString] = emptyDayData;
+
+          return { dataByDate: newDataByDate };
+        });
       },
     }),
     {

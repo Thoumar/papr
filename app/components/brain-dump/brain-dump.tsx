@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 
 import { useAppStore } from "@papr/app/stores/appStore";
 
@@ -14,21 +14,23 @@ const BrainDump = () => {
   const getDailyData = useAppStore((state) => state.getDailyData);
   const updateBrainDumps = useAppStore((state) => state.updateBrainDumps);
 
+  const brainDumps = useAppStore(
+    (state) => state.getDailyData(new Date(state.currentDate)).brainDumps
+  );
+
   const inputRefs = useRef<(null | HTMLInputElement)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
-
-  const [brainDumps, setBrainDumps] = useState<string[]>([""]);
 
   useEffect(() => {
     try {
       const currentDate = new Date(currentDateString);
       const dailyData = getDailyData(currentDate);
-      setBrainDumps(dailyData.brainDumps);
+      updateBrainDumps(new Date(currentDateString), dailyData.brainDumps);
     } catch (error) {
       console.error("Error fetching top priorities:", error);
-      setBrainDumps([]);
+      updateBrainDumps(new Date(currentDateString), []);
     }
-  }, [currentDateString, getDailyData]);
+  }, [currentDateString, getDailyData, updateBrainDumps]);
 
   const handleDumpChange = (index: number, value: string) => {
     const newBrainDumps = [...brainDumps];
@@ -36,7 +38,6 @@ const BrainDump = () => {
     if (index === brainDumps.length - 1 && value && brainDumps.length < 100) {
       newBrainDumps.push("");
     }
-    setBrainDumps(newBrainDumps);
     updateBrainDumps(new Date(currentDateString), newBrainDumps);
   };
 
@@ -45,19 +46,8 @@ const BrainDump = () => {
     if (newDumps.length === 0) {
       newDumps.push("");
     }
-    setBrainDumps(newDumps);
+    updateBrainDumps(new Date(currentDateString), newDumps);
   };
-
-  useEffect(() => {
-    try {
-      const currentDate = new Date(currentDateString);
-      const dailyData = getDailyData(currentDate);
-      setBrainDumps(dailyData.brainDumps);
-    } catch (error) {
-      console.error("Error fetching top priorities:", error);
-      setBrainDumps([]);
-    }
-  }, [currentDateString, getDailyData]);
 
   const handleKeyDown = (
     index: number,
@@ -106,7 +96,7 @@ const BrainDump = () => {
 
   return (
     <div className={styles.brainDump}>
-      <h2 className={styles.title}>Brain Dump</h2>
+      <h3 className={styles.title}>Brain Dump</h3>
       <div ref={externalRef} className={styles.list} onClick={handleListClick}>
         {brainDumps.map((dump, index) => (
           <div

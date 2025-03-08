@@ -10,3 +10,51 @@
 
 .fc tr:nth-child(odd)
     border-top: 1px solid rgba(0, 0, 0, 0.1)
+
+.fc-event.fc-event-mirror.fc-event-draggable.fc-event-resizable.fc-event-dragging.fc-event-start.fc-event-end.fc-event-past.fc-event-today.fc-timegrid-event.fc-v-event
+    padding: 0
+
+    .fc-event-main
+        width: 100%
+
+.fc-event.fc-event-dragging
+    display: flex
+    justify-content: space-between
+    border: 1px solid black
+    border-radius: 3px
+    padding: 0.5rem
+
+    input
+        background-color: transparent
+        outline: none
+        border: none
+        flex: 1
+
+        & > div
+            display: flex
+
+        .actions
+            width: 3.5rem
+            display: none
+            justify-content: space-between
+            align-items: center
+
+            .clearInput
+                display: flex
+                align-items: center
+                justify-content: center
+                color: black
+                cursor: pointer
+
+                svg
+                    height: 1.1rem
+
+            .dragHandle
+                display: flex
+                align-items: center
+                justify-content: center
+                color: black
+                cursor: grab
+
+                svg
+                    height: 1.1rem

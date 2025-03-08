@@ -30,30 +30,39 @@ export const SavedDates = () => {
     }
   }
 
+  // Sort the favorites array *before* mapping.  This is the key change.
+  const sortedFavorites = [...favorites].sort((a, b) => {
+    return new Date(b).getTime() - new Date(a).getTime();
+  });
+
   return (
     <div className={styles.savedDates}>
-      {favorites.map((date) => (
-        <div key={date} className={styles.dateContainer}>
-          <button
-            className={styles.date}
-            onClick={() => {
-              setCurrentDate(new Date(date));
-            }}
-          >
-            {getFormattedDate(date)}
-          </button>
+      {sortedFavorites.map(
+        (
+          date // Use sortedFavorites here
+        ) => (
+          <div key={date} className={styles.dateContainer}>
+            <button
+              className={styles.date}
+              onClick={() => {
+                setCurrentDate(new Date(date));
+              }}
+            >
+              {getFormattedDate(date)}
+            </button>
 
-          <button
-            className={styles.closeBtn}
-            onClick={(e) => {
-              e.preventDefault();
-              removeFavorite(date);
-            }}
-          >
-            <ClearRounded fontSize="small" />
-          </button>
-        </div>
-      ))}
+            <button
+              className={styles.closeBtn}
+              onClick={(e) => {
+                e.preventDefault();
+                removeFavorite(date);
+              }}
+            >
+              <ClearRounded fontSize="small" />
+            </button>
+          </div>
+        )
+      )}
     </div>
   );
 };

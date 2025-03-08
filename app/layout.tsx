@@ -1,16 +1,12 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Lexend } from "next/font/google";
 
-import PostHogWrapper from "./posthog/posthog-wrapper";
+import { lexend } from "./fonts";
 
 import "./app.sass";
 
-const lexend = Lexend({
-  display: "swap",
-  subsets: ["latin"],
-});
+import PostHogWrapper from "./posthog/posthog-wrapper";
 
 export const metadata: Metadata = {
   title: "Papr",

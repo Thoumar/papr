@@ -2,18 +2,14 @@
 
 import React, { useRef, useEffect } from "react";
 
-import { Lexend } from "@papr/app/fonts";
 import { useAppStore } from "@papr/app/stores/appStore";
 
 import { Draggable } from "@fullcalendar/interaction";
 import { ClearRounded, DragIndicatorRounded } from "@mui/icons-material";
 
-import clsx from "clsx";
-
 import styles from "./top-priorities.module.sass";
 
 const TopPriorities = () => {
-  const getDailyData = useAppStore((state) => state.getDailyData);
   const currentDateString = useAppStore((state) => state.currentDate);
   const updateTopPriorities = useAppStore((state) => state.updateTopPriorities);
 
@@ -23,17 +19,6 @@ const TopPriorities = () => {
 
   const inputRefs = useRef<(null | HTMLInputElement)[]>([]);
   const externalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    try {
-      const currentDate = new Date(currentDateString);
-      const dailyData = getDailyData(currentDate);
-      updateTopPriorities(currentDate, dailyData.topPriorities);
-    } catch (error) {
-      console.error("Error fetching top priorities:", error);
-      updateTopPriorities(new Date(currentDateString), []);
-    }
-  }, [currentDateString, getDailyData, updateTopPriorities]);
 
   const handlePriorityChange = (index: number, value: string) => {
     const newPriorities = [...topPriorities];
@@ -84,7 +69,7 @@ const TopPriorities = () => {
 
   return (
     <div className={styles.topPriorities}>
-      <h2 className={clsx([Lexend, styles.title])}>Top Priorities</h2>
+      <h3 className={styles.title}>Top Priorities</h3>
       <div ref={externalRef} className={styles.grid}>
         {topPriorities.map((priority, index) => (
           <div

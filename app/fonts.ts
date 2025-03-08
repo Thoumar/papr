@@ -1,8 +1,17 @@
-import { Lexend as LexendFont } from "next/font/google";
+import {
+  Lexend as LexendFont,
+  Libre_Baskerville as BaskervilleFont,
+} from "next/font/google";
 
-const Lexend = LexendFont({
+const lexend = LexendFont({
   display: "swap",
   subsets: ["latin"],
 });
 
-export { Lexend };
+const baskerville = BaskervilleFont({
+  display: "swap",
+  weight: ["400"],
+  subsets: ["latin"],
+});
+
+export { lexend, baskerville };
