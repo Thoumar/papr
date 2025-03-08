@@ -86,14 +86,13 @@ const BrainDump = () => {
       new Draggable(externalRef.current, {
         itemSelector: ".fc-event",
         eventData: (eventEl: HTMLElement) => {
-          // Explicitly get the title from the input field
           const titleEl = eventEl.querySelector("input");
           const title = titleEl
             ? titleEl.value
             : `Brain Dump ${eventEl.getAttribute("data-index") || ""}`;
 
           return {
-            id: eventEl.getAttribute("data-id") || crypto.randomUUID(),
+            id: crypto.randomUUID(),
             title: title || "Untitled Dump",
           };
         },
@@ -109,7 +108,7 @@ const BrainDump = () => {
     <div className={styles.brainDump}>
       <h2 className={styles.title}>Brain Dump</h2>
       <div ref={externalRef} className={styles.list} onClick={handleListClick}>
-        {brainDumps.map((item, index) => (
+        {brainDumps.map((dump, index) => (
           <div
             key={index}
             data-index={index + 1}
@@ -119,7 +118,7 @@ const BrainDump = () => {
           >
             <input
               type="text"
-              value={item}
+              value={dump}
               className={styles.input}
               placeholder={`Item ${index + 1}`}
               onKeyDown={(e) => handleKeyDown(index, e)}
@@ -127,17 +126,22 @@ const BrainDump = () => {
               ref={(el) => (inputRefs.current[index] = el)}
               onChange={(e) => handleDumpChange(index, e.target.value)}
             />
-            <div className={styles.actions}>
-              <div
-                className={styles.clearInput}
-                onClick={() => removeItem(index)}
-              >
-                <ClearRounded />
-              </div>
-              <div className={styles.dragHandle}>
-                <DragIndicatorRounded />
-              </div>
-            </div>
+
+            {dump.length !== 0 && (
+              <React.Fragment>
+                <div className={styles.actions}>
+                  <div
+                    className={styles.clearInput}
+                    onClick={() => removeItem(index)}
+                  >
+                    <ClearRounded />
+                  </div>
+                  <div className={styles.dragHandle}>
+                    <DragIndicatorRounded />
+                  </div>
+                </div>
+              </React.Fragment>
+            )}
           </div>
         ))}
       </div>

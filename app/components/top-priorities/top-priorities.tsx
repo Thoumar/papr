@@ -68,14 +68,13 @@ const TopPriorities = () => {
       new Draggable(externalRef.current, {
         itemSelector: ".fc-event",
         eventData: (eventEl: HTMLElement) => {
-          // Explicitly get the title from the input field
           const titleEl = eventEl.querySelector("input");
           const title = titleEl
             ? titleEl.value
             : `Priority ${eventEl.getAttribute("data-index") || ""}`;
 
           return {
-            id: eventEl.getAttribute("data-id") || crypto.randomUUID(),
+            id: crypto.randomUUID(),
             title: title || "Untitled Priority",
           };
         },
@@ -106,17 +105,21 @@ const TopPriorities = () => {
               onChange={(e) => handlePriorityChange(index, e.target.value)}
             />
 
-            <div className={styles.actions}>
-              <div
-                className={styles.clearInput}
-                onClick={() => removeItem(index)}
-              >
-                <ClearRounded />
-              </div>
-              <div className={styles.dragHandle}>
-                <DragIndicatorRounded />
-              </div>
-            </div>
+            {priority.length !== 0 && (
+              <React.Fragment>
+                <div className={styles.actions}>
+                  <div
+                    className={styles.clearInput}
+                    onClick={() => removeItem(index)}
+                  >
+                    <ClearRounded />
+                  </div>
+                  <div className={styles.dragHandle}>
+                    <DragIndicatorRounded />
+                  </div>
+                </div>
+              </React.Fragment>
+            )}
           </div>
         ))}
       </div>

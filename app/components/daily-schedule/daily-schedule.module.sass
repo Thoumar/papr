@@ -45,55 +45,21 @@
         font-weight: bold
 
     .schedule
-        overflow: auto
-        scrollbar-width: none
-        -ms-overflow-style: none
         &::-webkit-scrollbar
             display: none
-
-        .fc
-            background: white
-            border: none
-
-        .fc-toolbar
-            display: none
-
-        .fc-view
-            background: white
-            border: none
-
-        .fc-timegrid-slot-label
-            color: black
-            font-size: 0.8rem
-            border-right: 1px solid black
-
-        .fc-event
-            background: white !important
-            border: 1px solid black !important
-            color: black !important
-            font-size: 0.9rem
-            cursor: pointer
-
-            &:hover
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
-
-        .fc-now-indicator-line
-            background-color: black
-
-        .fc-day-today
-            background-color: #f5f5f5
 
         table
             background: white
 
-        .fc-theme-standard td
-            border: none !important
-
-        .fc-theme-standard th
-            border: none !important
-
-    .fc td.fc-timegrid-slot.fc-timegrid-slot-lane
-        border: 0px solid red !important
+    .closeBtn
+        color: black
+        cursor: pointer
+        height: 14px
+        width: 14px
+        display: flex
+        justify-content: center
+        align-items: center
+        cursor: pointer
 
 @media screen and (max-width: 768px)
     .dailySchedule

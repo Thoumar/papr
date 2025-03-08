@@ -1,7 +1,7 @@
 .savedDates
     padding: 1rem
-    flex: 1
     gap: .3rem
+    width: 100%
 
     .dateContainer
         list-style-type: none
@@ -9,6 +9,10 @@
         justify-content: space-between
         align-items: center
         max-width: 15rem
+
+        &:hover
+            .closeBtn
+                display: flex
 
         .date
             padding: 0.2rem
@@ -22,11 +26,18 @@
             align-items: center
             width: auto
             height: auto
+            text-align: left
 
             &:hover
                 background-color: lightgray
 
-        button
+        .closeBtn
+            color: black
+            cursor: pointer
+            display: flex
+            justify-content: center
+            align-items: center
+            cursor: pointer
             cursor: pointer
             border: none
             background-color: transparent

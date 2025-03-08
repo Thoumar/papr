@@ -32,30 +32,28 @@ export const SavedDates = () => {
 
   return (
     <div className={styles.savedDates}>
-      <h2>Saved Dates</h2>
-      <div>
-        {favorites.map((date) => (
-          <div key={date} className={styles.dateContainer}>
-            <button
-              className={styles.date}
-              onClick={() => {
-                setCurrentDate(new Date(date));
-              }}
-            >
-              {getFormattedDate(date)}
-            </button>
+      {favorites.map((date) => (
+        <div key={date} className={styles.dateContainer}>
+          <button
+            className={styles.date}
+            onClick={() => {
+              setCurrentDate(new Date(date));
+            }}
+          >
+            {getFormattedDate(date)}
+          </button>
 
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                removeFavorite(date);
-              }}
-            >
-              <ClearRounded fontSize="small" />
-            </button>
-          </div>
-        ))}
-      </div>
+          <button
+            className={styles.closeBtn}
+            onClick={(e) => {
+              e.preventDefault();
+              removeFavorite(date);
+            }}
+          >
+            <ClearRounded fontSize="small" />
+          </button>
+        </div>
+      ))}
     </div>
   );
 };
