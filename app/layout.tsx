@@ -35,11 +35,10 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    title: "Papr",
     locale: "en_US",
     siteName: "Papr",
     url: "https://usepapr.co",
-    description: "The most simple productivity sheet",
+    title: "Papr - Harvard Time Boxing Productivity Tool",
     images: [
       {
         width: 1200,
@@ -48,6 +47,8 @@ export const metadata: Metadata = {
         url: "https://usepapr.co/images/logo.png",
       },
     ],
+    description:
+      "Harness Harvard's time boxing method by using Papr – the most clean and simple productivity app that helps you structure your day, boosts focus, and helps you achieve your goals like a pro.",
   },
   keywords: [
     "productivity",

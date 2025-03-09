@@ -20,10 +20,8 @@ export default function Home() {
   const onDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
 
-    // No destination (dropped outside a droppable)
     if (!destination) return;
 
-    // Dropped in the same place
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -37,12 +35,10 @@ export default function Home() {
       source.droppableId === "top-priorities" &&
       destination.droppableId === "daily-schedule"
     ) {
-      // Dragged from TopPriorities to DailySchedule
       const dailyData = getDailyData(currentDate);
       const topPriorities = [...dailyData.topPriorities];
       const schedule = [...dailyData.schedule];
 
-      // Find the dragged priority
       const draggedPriorityIndex = topPriorities.findIndex(
         (p, index) => `tp-${index}` === draggableId
       );
@@ -50,63 +46,50 @@ export default function Home() {
 
       if (!draggedPriority) return;
 
-      // Remove from TopPriorities
       topPriorities.splice(draggedPriorityIndex, 1);
 
-      // Add to Schedule
       const newScheduleItem = {
-        id: draggableId, // Use the draggableId for consistency
+        id: draggableId,
         title: draggedPriority,
-        start: currentDateString, //  set start time.  Adjust as needed.
-        // end: ... ,  // You might set a default duration, or handle this later
+        start: currentDateString,
       };
       schedule.splice(destination.index, 0, newScheduleItem);
 
-      // Update the store
       updateTopPriorities(currentDate, topPriorities);
       updateSchedule(currentDate, schedule);
     } else if (
       source.droppableId === "daily-schedule" &&
       destination.droppableId === "top-priorities"
     ) {
-      // Dragged from DailySchedule to TopPriorities
       const dailyData = getDailyData(currentDate);
       const topPriorities = [...dailyData.topPriorities];
       const schedule = [...dailyData.schedule];
 
-      // Find the dragged event
       const draggedEvent = schedule.find((event) => event.id === draggableId);
 
-      if (!draggedEvent) return; // Should not happen, but good to check
+      if (!draggedEvent) return;
 
-      // Remove from Schedule
       const updatedSchedule = schedule.filter(
         (event) => event.id !== draggableId
       );
 
-      // Add to TopPriorities, handling empty slots
-      topPriorities.splice(destination.index, 0, draggedEvent.title); // Insert at the drop index
-      // Remove trailing empty strings to keep the list compact
+      topPriorities.splice(destination.index, 0, draggedEvent.title);
       while (
         topPriorities.length > 0 &&
         topPriorities[topPriorities.length - 1] === ""
       ) {
         topPriorities.pop();
       }
-      // Ensure there's at least one empty slot for a new priority
       if (topPriorities.every((p) => p !== "")) {
         topPriorities.push("");
       }
 
-      // Update the store
       updateTopPriorities(currentDate, topPriorities);
       updateSchedule(currentDate, updatedSchedule);
     } else if (source.droppableId === "top-priorities") {
-      // Reordering within TopPriorities
       const dailyData = getDailyData(currentDate);
       const topPriorities = [...dailyData.topPriorities];
 
-      // Reorder
       const draggedPriorityIndex = topPriorities.findIndex(
         (p, index) => `tp-${index}` === draggableId
       );
@@ -114,18 +97,14 @@ export default function Home() {
       const [reorderedItem] = topPriorities.splice(draggedPriorityIndex, 1);
       topPriorities.splice(destination.index, 0, reorderedItem);
 
-      // Update the store
       updateTopPriorities(currentDate, topPriorities);
     } else if (source.droppableId === "daily-schedule") {
-      // Reordering within DailySchedule
       const dailyData = getDailyData(currentDate);
       const schedule = [...dailyData.schedule];
 
-      // Reorder
       const [reorderedItem] = schedule.splice(source.index, 1);
       schedule.splice(destination.index, 0, reorderedItem);
 
-      // Update the store
       updateSchedule(currentDate, schedule);
     }
   };
@@ -139,7 +118,8 @@ export default function Home() {
         <main className={styles.main}>
           <Header />
           <div className={styles.left}>
-            <TopPriorities /> <BrainDump />
+            <TopPriorities />
+            <BrainDump />
           </div>
           <div className={styles.right}>
             <DailySchedule />

@@ -12,7 +12,6 @@ import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 
 import styles from "./daily-schedule.module.sass";
 
-// Define the ScheduleEvent interface to match your app store type
 interface ScheduleEvent {
   id: string;
   end?: string;
